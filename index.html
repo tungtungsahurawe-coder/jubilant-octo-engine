@@ -1,0 +1,1087 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090c0a">
+  <title>المافيا | لعبة المدينة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #090c0a;
+      --surface: #111713;
+      --surface-2: #17201a;
+      --green: #08784e;
+      --green-light: #13a16a;
+      --gold: #d7b45f;
+      --gold-pale: #f0d58c;
+      --text: #f1efe8;
+      --muted: #9a9f99;
+      --line: rgba(215, 180, 95, .2);
+      --font: "Cairo", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at 50% -15%, rgba(15, 93, 59, .21), transparent 48%),
+        var(--bg);
+      font-family: var(--font);
+    }
+
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .topbar {
+      height: 70px;
+      padding: 0 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      background: rgba(9,12,10,.82);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0;
+      color: var(--gold);
+      border: 0;
+      background: none;
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    .brand-mark { font-size: 25px; }
+    .topbar-info { display: flex; align-items: center; gap: 9px; color: var(--muted); font-size: 13px; }
+    .online-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green-light); box-shadow: 0 0 12px var(--green-light); }
+    main { width: min(1120px, 92%); min-height: calc(100vh - 130px); margin: 0 auto; }
+
+    .screen { padding: 54px 0 46px; animation: appear .35s ease; }
+    .hidden { display: none !important; }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .welcome-screen {
+      min-height: calc(100vh - 130px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-top: 25px;
+    }
+
+    .welcome-emblem {
+      width: 92px; height: 92px;
+      display: grid; place-items: center;
+      margin-bottom: 22px;
+      color: var(--gold);
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: linear-gradient(145deg, #17231a, #101511);
+      box-shadow: 0 0 50px rgba(215,180,95,.08);
+      font-size: 44px;
+    }
+
+    .eyebrow { margin: 0 0 7px; color: var(--gold); font-size: 12px; font-weight: 700; }
+    .welcome-screen h1 { margin: 0; font-size: clamp(38px, 7vw, 66px); line-height: 1.35; }
+    .welcome-screen h1 span { color: var(--gold); }
+    .intro-copy { max-width: 420px; margin: 14px 0 27px; color: var(--muted); line-height: 1.9; }
+    .welcome-bottom { position: absolute; bottom: 23px; color: #777d76; font-size: 12px; }
+
+    .button {
+      min-height: 46px;
+      padding: 10px 19px;
+      color: white;
+      border: 1px solid transparent;
+      border-radius: 11px;
+      font-weight: 700;
+      transition: .2s ease;
+    }
+
+    .button:hover { transform: translateY(-1px); filter: brightness(1.12); }
+    .button-primary { background: linear-gradient(120deg, #08784e, #09613f); }
+    .button-outline { color: var(--gold-pale); border-color: var(--line); background: transparent; }
+    .button-gold { color: #211b0d; background: linear-gradient(120deg, var(--gold-pale), var(--gold)); }
+    .button-large { min-width: 210px; min-height: 54px; font-size: 16px; }
+    .button-large span { padding-right: 11px; }
+    .full-width { width: 100%; margin-top: 14px; }
+
+    .page-heading { margin-bottom: 25px; }
+    .page-heading h1, .game-heading h1 { margin: 0; font-size: clamp(28px, 4vw, 39px); }
+    .page-heading > p:last-child, .game-heading > div > p:last-child { margin: 6px 0 0; color: var(--muted); }
+
+    .home-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 17px; }
+    .panel {
+      padding: 23px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: linear-gradient(145deg, rgba(20,28,22,.96), rgba(15,20,17,.97));
+      box-shadow: 0 14px 40px rgba(0,0,0,.14);
+    }
+
+    .profile-panel { grid-row: span 2; display: flex; flex-direction: column; justify-content: center; }
+    .panel-icon { margin-bottom: 20px; color: var(--gold); font-size: 37px; }
+    label { display: block; margin: 10px 0 8px; color: #deddd5; font-size: 13px; font-weight: 700; }
+
+    input, select {
+      width: 100%; min-height: 47px; padding: 10px 13px; color: var(--text);
+      border: 1px solid rgba(255,255,255,.1); border-radius: 10px; outline: none;
+      background: #0c110e;
+    }
+
+    input:focus, select:focus { border-color: var(--gold); }
+    input::placeholder { color: #737972; }
+    select { color-scheme: dark; }
+    .field-note { margin: 8px 0 2px; color: var(--muted); font-size: 12px; }
+
+    .panel-title, .panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .panel-title h2, .panel-heading h2 { margin: 0; font-size: 19px; }
+    .title-icon { color: var(--gold); font-size: 24px; }
+    .compact-heading { margin-bottom: 19px; }
+    .lobby-panel { padding: 27px; }
+
+    .lobby-top { display: flex; justify-content: space-between; align-items: center; gap: 15px; }
+    .room-code-line { display: flex; align-items: center; gap: 12px; }
+    .room-code-line strong { color: var(--gold-pale); font-size: 23px; letter-spacing: 2px; }
+    .copy-button { padding: 5px 11px; color: var(--gold); border: 1px solid var(--line); border-radius: 7px; background: transparent; }
+    .capacity-pill, .alive-counter { padding: 7px 12px; color: var(--gold-pale); border: 1px solid var(--line); border-radius: 30px; background: rgba(215,180,95,.05); font-size: 13px; white-space: nowrap; }
+    .lobby-divider { height: 1px; margin: 22px 0; background: rgba(255,255,255,.07); }
+    .section-label { display: flex; justify-content: space-between; margin-bottom: 13px; font-weight: 700; }
+    .subtle-label { color: var(--muted); font-size: 12px; font-weight: 400; }
+    .lobby-players { display: grid; grid-template-columns: repeat(4, 1fr); gap: 11px; }
+
+    .lobby-player, .game-player {
+      position: relative; min-width: 0; border: 1px solid rgba(255,255,255,.07);
+      border-radius: 12px; background: var(--surface-2);
+    }
+
+    .lobby-player { min-height: 81px; padding: 12px; display: flex; align-items: center; gap: 10px; }
+    .player-avatar { width: 38px; height: 38px; flex: 0 0 auto; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 11px; background: #111a14; font-size: 19px; }
+    .player-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 700; }
+    .host-tag { margin-top: 3px; color: var(--gold); font-size: 10px; }
+    .lobby-bottom { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-top: 24px; }
+    .lobby-bottom p { margin: 0; color: var(--muted); font-size: 13px; }
+    .lobby-buttons { display: flex; gap: 9px; }
+
+    .game-heading { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 22px; }
+    .round-badge { padding: 9px 14px; color: var(--gold-pale); border: 1px solid var(--line); border-radius: 30px; background: rgba(215,180,95,.05); white-space: nowrap; font-size: 13px; }
+    .game-layout { display: grid; grid-template-columns: 1.5fr .8fr; gap: 17px; align-items: start; }
+    .panel-heading { margin-bottom: 18px; }
+    .panel-heading h2 { margin-top: 1px; }
+    .game-players { display: grid; grid-template-columns: repeat(3, 1fr); gap: 11px; }
+
+    .game-player {
+      min-height: 102px; padding: 12px 8px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 3px; color: var(--text);
+      font-weight: 700; transition: .18s;
+    }
+
+    .game-player:not(:disabled):hover { border-color: var(--gold); transform: translateY(-2px); }
+    .game-player.selected { border-color: var(--green-light); box-shadow: 0 0 0 2px rgba(19,161,106,.16); background: #19271e; }
+    .game-player.dead { opacity: .42; filter: grayscale(1); cursor: default; }
+    .game-player.self::after { content: "أنت"; position: absolute; top: 5px; left: 7px; color: var(--gold); font-size: 9px; }
+    .game-player .player-avatar { width: 39px; height: 39px; border-radius: 50%; }
+    .game-player small { color: var(--muted); font-size: 10px; font-weight: 400; }
+    .selection-hint { margin-top: 15px; padding: 10px 12px; color: var(--muted); border-right: 2px solid var(--gold); background: rgba(215,180,95,.04); font-size: 12px; }
+    .game-sidebar { display: grid; gap: 13px; }
+    .role-panel { text-align: center; }
+    .role-card-top { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 7px; }
+    .role-emblem { width: 48px; height: 48px; display: grid; place-items: center; color: var(--gold); border: 1px solid var(--line); border-radius: 50%; background: #111a14; font-size: 23px; }
+    .role-label { color: var(--muted); font-size: 12px; }
+    .role-panel h2 { margin: 0; color: var(--gold-pale); font-size: 20px; }
+    .role-panel p, .action-panel p { margin: 7px 0 0; color: var(--muted); font-size: 12px; line-height: 1.8; }
+    .action-panel h2 { margin: 3px 0 0; font-size: 17px; }
+    .log-panel { padding: 16px 19px; }
+    #gameLog { margin-top: 7px; color: var(--muted); font-size: 12px; line-height: 1.8; }
+
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 10; display: grid; place-items: center;
+      padding: 20px; background: rgba(0,0,0,.79); backdrop-filter: blur(5px);
+    }
+
+    .modal-card {
+      position: relative; width: min(420px, 100%); padding: 33px 25px 25px;
+      text-align: center; border: 1px solid rgba(215,180,95,.55); border-radius: 19px;
+      background: linear-gradient(145deg, #1a261d, #0d120f); box-shadow: 0 24px 90px #000;
+    }
+
+    .modal-close { position: absolute; top: 9px; left: 12px; color: var(--muted); border: 0; background: none; font-size: 27px; }
+    .modal-emblem { display: block; margin-bottom: 8px; color: var(--gold); font-size: 43px; }
+    .modal-card h2 { margin: 4px 0; color: var(--gold-pale); font-size: 26px; }
+    .modal-card p:not(.eyebrow) { margin: 8px 0 17px; color: var(--muted); line-height: 1.9; font-size: 14px; }
+    footer { padding: 17px; color: #747a73; text-align: center; font-size: 12px; }
+
+    @media (max-width: 760px) {
+      main { width: min(100% - 28px, 560px); }
+      .screen { padding-top: 34px; }
+      .home-layout, .game-layout { grid-template-columns: 1fr; }
+      .profile-panel { grid-row: auto; }
+      .game-players { grid-template-columns: repeat(2, 1fr); }
+      .lobby-players { grid-template-columns: repeat(2, 1fr); }
+      .lobby-bottom { align-items: stretch; flex-direction: column; }
+      .lobby-buttons > button { flex: 1; }
+    }
+
+    @media (max-width: 420px) {
+      .topbar { padding: 0 4%; }
+      .panel, .lobby-panel { padding: 18px; }
+      .lobby-top { align-items: flex-start; flex-direction: column; }
+      .game-heading { align-items: flex-start; flex-direction: column; }
+      .subtle-label { font-size: 10px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <button class="brand" type="button" onclick="goHome()">
+      <span class="brand-mark">♛</span><span>المافيا</span>
+    </button>
+    <div class="topbar-info">
+      <span class="online-dot"></span>
+      <span id="headerStatus">لعبة اجتماعية</span>
+    </div>
+  </header>
+
+  <main>
+    <section id="welcomeScreen" class="screen welcome-screen">
+      <div class="welcome-emblem">♛</div>
+      <p class="eyebrow">لعبة الخداع والتحقيق</p>
+      <h1>في هذه المدينة،<br><span>لا تثق بأحد.</span></h1>
+      <p class="intro-copy">اجتمعوا، اكتشفوا الحقيقة، وحاولوا النجاة حتى الصباح.</p>
+      <button class="button button-gold button-large" id="enterButton">ادخل المدينة <span>←</span></button>
+      <div class="welcome-bottom">من صنع محمد و مصطفى</div>
+    </section>
+
+    <section id="homeScreen" class="screen hidden">
+      <div class="page-heading">
+        <p class="eyebrow">أهلًا بك في المدينة</p>
+        <h1>ابدأ حكايتك</h1>
+        <p>اكتب اسمك، ثم أنشئ غرفة أو انضم إلى أصدقائك.</p>
+      </div>
+
+      <div class="home-layout">
+        <section class="panel profile-panel">
+          <div class="panel-icon">♟</div>
+          <label for="playerName">اسم اللاعب</label>
+          <input id="playerName" maxlength="18" placeholder="اكتب اسمك هنا" autocomplete="nickname">
+          <p class="field-note">اختَر اسمًا يظهر لبقية اللاعبين.</p>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title">
+            <div><span class="eyebrow">ابدأوا اللعب</span><h2>إنشاء غرفة</h2></div>
+            <span class="title-icon">✦</span>
+          </div>
+          <label for="capacity">عدد اللاعبين</label>
+          <select id="capacity">
+            <option value="6">6 لاعبين</option><option value="7">7 لاعبين</option>
+            <option value="8">8 لاعبين</option><option value="9">9 لاعبين</option>
+            <option value="10">10 لاعبين</option><option value="11">11 لاعبًا</option>
+            <option value="12">12 لاعبًا</option>
+          </select>
+          <p class="field-note">من 6 إلى 8: مافيا واحدة · من 9 إلى 12: مافيان</p>
+          <button class="button button-primary full-width" id="createRoomButton">إنشاء غرفة جديدة</button>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title">
+            <div><span class="eyebrow">عندك رمز الغرفة؟</span><h2>انضم للأصدقاء</h2></div>
+            <span class="title-icon">⌁</span>
+          </div>
+          <label for="roomCode">رمز الغرفة</label>
+          <input id="roomCode" maxlength="8" placeholder="مثال: MAFIA7" autocomplete="off">
+          <button class="button button-outline full-width" id="joinRoomButton">انضمام للغرفة</button>
+        </section>
+      </div>
+    </section>
+
+    <section id="lobbyScreen" class="screen hidden">
+      <div class="page-heading compact-heading">
+        <p class="eyebrow">الاستعداد للمواجهة</p>
+        <h1>لوبي المدينة</h1>
+        <p>تأكدوا من حضور اللاعبين قبل بدء الجولة.</p>
+      </div>
+
+      <section class="panel lobby-panel">
+        <div class="lobby-top">
+          <div>
+            <span class="eyebrow">رمز الغرفة</span>
+            <div class="room-code-line">
+              <strong id="lobbyRoomCode">------</strong>
+              <button class="copy-button" id="copyCodeButton">نسخ</button>
+            </div>
+          </div>
+          <div class="capacity-pill"><span id="lobbyCount">1</span> / <span id="lobbyCapacity">6</span> لاعبين</div>
+        </div>
+        <div class="lobby-divider"></div>
+        <div class="section-label"><span>اللاعبون</span><span class="subtle-label">بانتظار بدء الجولة</span></div>
+        <div class="lobby-players" id="lobbyPlayers"></div>
+        <div class="lobby-bottom">
+          <p id="lobbyMessage">أرسل رمز الغرفة إلى أصدقائك.</p>
+          <div class="lobby-buttons">
+            <button class="button button-outline" id="leaveRoomButton">مغادرة</button>
+            <button class="button button-primary" id="startGameButton">ابدأ الجولة</button>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section id="gameScreen" class="screen hidden">
+      <div class="game-heading">
+        <div>
+          <p class="eyebrow" id="gameRoomLabel">الغرفة</p>
+          <h1 id="phaseTitle">الليل يخيّم على المدينة</h1>
+          <p id="phaseDescription">اختر الإجراء المناسب لدورك.</p>
+        </div>
+        <div class="round-badge" id="roundLabel">الليلة الأولى</div>
+      </div>
+
+      <div class="game-layout">
+        <section class="panel">
+          <div class="panel-heading">
+            <div><span class="eyebrow">أهل المدينة</span><h2>اللاعبون</h2></div>
+            <span class="alive-counter" id="aliveCounter">0 أحياء</span>
+          </div>
+          <div class="game-players" id="gamePlayers"></div>
+          <div class="selection-hint" id="selectionHint">اختر لاعبًا لتنفيذ الإجراء.</div>
+        </section>
+
+        <aside class="game-sidebar">
+          <section class="panel role-panel">
+            <div class="role-card-top"><span class="role-emblem" id="roleEmblem">?</span><span class="role-label">دورك</span></div>
+            <h2 id="roleName">الدور السري</h2>
+            <p id="roleDescription">اضغط لكشف بطاقتك السرية.</p>
+            <button class="button button-outline full-width" id="revealRoleButton">كشف بطاقة دوري</button>
+          </section>
+
+          <section class="panel action-panel">
+            <span class="eyebrow">إجراء الجولة</span>
+            <h2 id="actionTitle">بانتظارك</h2>
+            <p id="actionDescription">اختر لاعبًا من القائمة، ثم أكّد اختيارك.</p>
+            <button class="button button-primary full-width" id="actionButton">تأكيد الاختيار</button>
+            <button class="button button-gold full-width hidden" id="advanceButton">متابعة الجولة</button>
+          </section>
+
+          <section class="panel log-panel">
+            <span class="eyebrow">سجل المدينة</span>
+            <div id="gameLog">بدأت الجولة. راقب ما يحدث...</div>
+          </section>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer>من صنع محمد و مصطفى</footer>
+
+  <div class="modal-backdrop hidden" id="roleModal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <button class="modal-close" id="closeRoleModal" aria-label="إغلاق">×</button>
+      <span class="modal-emblem" id="modalRoleEmblem">♟</span>
+      <p class="eyebrow">بطاقتك السرية</p>
+      <h2 id="modalRoleName">مواطن</h2>
+      <p id="modalRoleDescription">ساعد المدينة في كشف المافيا.</p>
+      <button class="button button-primary full-width" id="hideRoleButton">إخفاء البطاقة</button>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="resultModal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <span class="modal-emblem" id="resultEmblem">☀</span>
+      <p class="eyebrow">نتيجة الجولة</p>
+      <h2 id="resultTitle">أشرقت الشمس</h2>
+      <p id="resultDescription"></p>
+      <button class="button button-primary full-width" id="resultContinueButton">متابعة</button>
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+
+    // نسخة أونلاين: الاتصال بين اللاعبين عبر PeerJS (WebRTC) بدون سيرفر خاص.
+    const $ = (selector) => document.querySelector(selector);
+    const screens = {
+      welcome: $("#welcomeScreen"),
+      home: $("#homeScreen"),
+      lobby: $("#lobbyScreen"),
+      game: $("#gameScreen")
+    };
+
+    const PREFIX = "mafia-city-";
+    const ACTIVE_ROLES = ["mafia", "doctor", "investigator"];
+
+    const state = {
+      name: "", code: "", capacity: 6, players: [],
+      selectedId: null, phase: "night", round: 1,
+      alive: [], role: "citizen", pendingResult: "", gameEnded: false,
+      submitted: false, started: false, revealed: null, pendingInvestigation: null
+    };
+
+    // بيانات خاصة بصاحب الغرفة فقط (الأدوار السرية والإجراءات)
+    const host = { roles: {}, actions: {}, votes: {} };
+    let peer = null, isHost = false, myId = null, hostConn = null;
+    const conns = {};
+
+    const icons = ["🎩", "🕯️", "🦉", "🌙", "♟️", "🗝️", "🦊", "🪶", "🕰️", "🎭", "🕯️", "🦉"];
+    const demoNames = ["أحمد", "سارة", "علي", "نور", "عمر", "ليلى", "حسن", "مريم", "كريم", "زينب", "آدم", "رنا"];
+    const roles = {
+      mafia: { name: "المافيا", icon: "♠", description: "اختر لاعبًا تستهدفه المافيا خلال الليل." },
+      doctor: { name: "الطبيب", icon: "✚", description: "اختر لاعبًا لتحاول حمايته خلال الليل." },
+      investigator: { name: "المحقق", icon: "⌕", description: "اختر لاعبًا للتحري عنه خلال الليل." },
+      citizen: { name: "مواطن", icon: "♟", description: "ناقش مع أهل المدينة وساعد في كشف المافيا." }
+    };
+
+    function showScreen(name) {
+      Object.values(screens).forEach(screen => screen.classList.add("hidden"));
+      screens[name].classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function getName() {
+      return $("#playerName").value.trim().slice(0, 18);
+    }
+
+    function nameOf(id) {
+      return state.players.find(p => p.id === id)?.name || "لاعب";
+    }
+
+    function isBot(id) {
+      return String(id).startsWith("bot-");
+    }
+
+    // ---------- إنشاء غرفة (صاحب الغرفة) ----------
+    function createRoom() {
+      const name = getName();
+      if (!name) return alert("اكتب اسمك أولًا.");
+      if (typeof Peer === "undefined") return alert("تعذّر تحميل مكتبة الاتصال. تأكد من الإنترنت ثم حدّث الصفحة.");
+
+      const code = Math.random().toString(36).slice(2, 8).toUpperCase();
+      $("#createRoomButton").disabled = true;
+      $("#createRoomButton").textContent = "جارٍ الإنشاء...";
+
+      const p = new Peer(PREFIX + code, { debug: 0 });
+
+      p.on("open", id => {
+        peer = p; isHost = true; myId = id;
+        Object.assign(state, {
+          name, code, capacity: Number($("#capacity").value),
+          players: [{ id, name, icon: icons[0], host: true }],
+          started: false, gameEnded: false
+        });
+        resetCreateButton();
+        openLobby();
+      });
+
+      p.on("connection", conn => {
+        conn.on("data", msg => handleHostMessage(conn, msg));
+        conn.on("close", () => removePlayer(conn.peer));
+        conn.on("error", () => removePlayer(conn.peer));
+      });
+
+      p.on("error", err => {
+        resetCreateButton();
+        if (err.type === "unavailable-id") { p.destroy(); createRoom(); return; }
+        alert("تعذّر إنشاء الغرفة: " + err.type);
+      });
+    }
+
+    function resetCreateButton() {
+      $("#createRoomButton").disabled = false;
+      $("#createRoomButton").textContent = "إنشاء غرفة جديدة";
+    }
+
+    // ---------- الانضمام (اللاعب) ----------
+    function joinRoom() {
+      const name = getName();
+      const code = $("#roomCode").value.trim().toUpperCase();
+      if (!name) return alert("اكتب اسمك أولًا.");
+      if (!code) return alert("اكتب رمز الغرفة.");
+      if (typeof Peer === "undefined") return alert("تعذّر تحميل مكتبة الاتصال. تأكد من الإنترنت ثم حدّث الصفحة.");
+
+      $("#joinRoomButton").disabled = true;
+      $("#joinRoomButton").textContent = "جارٍ الاتصال...";
+
+      const p = new Peer(undefined, { debug: 0 });
+
+      p.on("open", id => {
+        peer = p; isHost = false; myId = id;
+        state.name = name; state.code = code;
+        const conn = p.connect(PREFIX + code, { reliable: true });
+        hostConn = conn;
+        conn.on("open", () => conn.send({ type: "join", name }));
+        conn.on("data", handleClientMessage);
+        conn.on("close", () => {
+          if (state.code) { alert("أُغلقت الغرفة من قِبل صاحبها."); leaveRoom(); }
+        });
+      });
+
+      p.on("error", err => {
+        resetJoinButton();
+        alert(err.type === "peer-unavailable" ? "لم نجد غرفة بهذا الرمز. تأكد من الرمز." : "خطأ في الاتصال: " + err.type);
+        p.destroy();
+      });
+    }
+
+    function resetJoinButton() {
+      $("#joinRoomButton").disabled = false;
+      $("#joinRoomButton").textContent = "انضمام للغرفة";
+    }
+
+    // ---------- رسائل الشبكة ----------
+    function broadcast(msg) {
+      Object.values(conns).forEach(c => { if (c.open) c.send(msg); });
+    }
+
+    function sendTo(id, msg) {
+      if (conns[id] && conns[id].open) conns[id].send(msg);
+    }
+
+    function lobbyPayload() {
+      return { type: "lobby", code: state.code, capacity: state.capacity, players: state.players };
+    }
+
+    function publicState() {
+      return {
+        players: state.players, alive: state.alive, phase: state.phase, round: state.round,
+        log: state.pendingResult, gameEnded: state.gameEnded,
+        revealed: state.gameEnded ? host.roles : null
+      };
+    }
+
+    function applyPublic(s) {
+      state.players = s.players; state.alive = s.alive; state.phase = s.phase;
+      state.round = s.round; state.pendingResult = s.log; state.gameEnded = s.gameEnded;
+      state.revealed = s.revealed;
+    }
+
+    function pushUpdate(result) {
+      const s = publicState();
+      broadcast({ type: "update", state: s, result });
+      applyPublic(s);
+      state.submitted = false;
+      state.selectedId = null;
+      renderGame();
+      if (result) showResult(result.icon, result.title, result.description);
+    }
+
+    function handleHostMessage(conn, msg) {
+      if (!msg || typeof msg !== "object") return;
+      if (msg.type === "join") {
+        if (state.started || state.players.length >= state.capacity) {
+          conn.send({ type: "error", message: state.started ? "اللعبة بدأت بالفعل في هذه الغرفة." : "الغرفة ممتلئة." });
+          setTimeout(() => conn.close(), 400);
+          return;
+        }
+        conns[conn.peer] = conn;
+        state.players.push({
+          id: conn.peer,
+          name: String(msg.name || "").slice(0, 18) || "لاعب",
+          icon: icons[state.players.length % icons.length],
+          host: false
+        });
+        renderLobby();
+        broadcast(lobbyPayload());
+      } else if (msg.type === "action") {
+        submitAction(conn.peer, msg.targetId);
+      } else if (msg.type === "vote") {
+        submitVote(conn.peer, msg.targetId);
+      }
+    }
+
+    function handleClientMessage(msg) {
+      if (!msg || typeof msg !== "object") return;
+      if (msg.type === "lobby") {
+        Object.assign(state, { code: msg.code, capacity: msg.capacity, players: msg.players, started: false, gameEnded: false });
+        resetJoinButton();
+        if (screens.lobby.classList.contains("hidden")) openLobby(); else renderLobby();
+      } else if (msg.type === "start") {
+        state.role = msg.role;
+        state.started = true;
+        applyPublic(msg.state);
+        enterGame();
+      } else if (msg.type === "update") {
+        applyPublic(msg.state);
+        state.submitted = false;
+        state.selectedId = null;
+        renderGame();
+        if (msg.result) showResult(msg.result.icon, msg.result.title, msg.result.description);
+      } else if (msg.type === "investigation") {
+        state.pendingInvestigation = msg;
+      } else if (msg.type === "error") {
+        alert(msg.message);
+        resetJoinButton();
+        state.code = "";
+      }
+    }
+
+    function removePlayer(id) {
+      delete conns[id];
+      if (!state.players.some(p => p.id === id)) return;
+
+      if (!state.started) {
+        state.players = state.players.filter(p => p.id !== id);
+        renderLobby();
+        broadcast(lobbyPayload());
+        return;
+      }
+
+      if (state.alive.includes(id) && !state.gameEnded) {
+        state.alive = state.alive.filter(x => x !== id);
+        state.pendingResult = nameOf(id) + " غادر اللعبة.";
+        if (checkEnd()) return;
+        pushUpdate(null);
+        if (state.phase === "night") tryResolveNight(); else tryResolveDay();
+      }
+    }
+
+    // ---------- اللوبي ----------
+    function openLobby() {
+      $("#headerStatus").textContent = isHost ? "أنت صاحب الغرفة" : "متصل بالغرفة";
+      $("#lobbyRoomCode").textContent = state.code;
+      $("#lobbyCapacity").textContent = state.capacity;
+      $("#startGameButton").classList.toggle("hidden", !isHost);
+      renderLobby();
+      showScreen("lobby");
+    }
+
+    function renderLobby() {
+      const list = $("#lobbyPlayers");
+      list.replaceChildren();
+
+      state.players.forEach(player => {
+        const card = document.createElement("div");
+        card.className = "lobby-player";
+        card.innerHTML = `<span class="player-avatar">${player.icon}</span><div><div class="player-name"></div>${player.host ? '<div class="host-tag">صاحب الغرفة</div>' : ""}</div>`;
+        card.querySelector(".player-name").textContent = player.name;
+        list.appendChild(card);
+      });
+
+      $("#lobbyCount").textContent = state.players.length;
+      $("#lobbyCapacity").textContent = state.capacity;
+      const enoughPlayers = state.players.length >= 6;
+      $("#startGameButton").style.opacity = enoughPlayers ? "1" : ".75";
+
+      if (!isHost) {
+        $("#lobbyMessage").textContent = "بانتظار صاحب الغرفة لبدء الجولة.";
+      } else {
+        $("#lobbyMessage").textContent = enoughPlayers
+          ? "الغرفة جاهزة. ابدأوا الجولة متى ما أردتم."
+          : `تحتاجون ${6 - state.players.length} لاعبين إضافيين. أو اضغطوا «ابدأ الجولة» لإضافة لاعبين تجريبيين.`;
+      }
+    }
+
+    function fillDemoPlayers() {
+      while (state.players.length < Math.max(6, state.capacity)) {
+        const i = state.players.length;
+        state.players.push({
+          id: "bot-" + i,
+          name: demoNames[i] || "لاعب " + (i + 1),
+          icon: icons[i % icons.length],
+          host: false
+        });
+      }
+    }
+
+    // ---------- بدء اللعبة (صاحب الغرفة) ----------
+    function startGame() {
+      if (!isHost) return;
+
+      if (state.players.length < 6) {
+        fillDemoPlayers();
+        renderLobby();
+        broadcast(lobbyPayload());
+        $("#lobbyMessage").textContent = "أضفنا لاعبين تجريبيين يلعبون تلقائيًا. اضغط «ابدأ الجولة» مرة أخرى للبدء.";
+        return;
+      }
+
+      const mafiaCount = state.players.length >= 9 ? 2 : 1;
+      const roleList = [
+        ...Array(mafiaCount).fill("mafia"),
+        "doctor",
+        "investigator",
+        ...Array(state.players.length - mafiaCount - 2).fill("citizen")
+      ];
+
+      for (let i = roleList.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [roleList[i], roleList[j]] = [roleList[j], roleList[i]];
+      }
+
+      host.roles = {}; host.actions = {}; host.votes = {};
+      state.players.forEach((player, index) => { host.roles[player.id] = roleList[index] || "citizen"; });
+
+      state.alive = state.players.map(player => player.id);
+      state.role = host.roles[myId];
+      state.phase = "night";
+      state.round = 1;
+      state.gameEnded = false;
+      state.started = true;
+      state.revealed = null;
+      state.pendingResult = "بدأت الجولة. راقب ما يحدث...";
+
+      const s = publicState();
+      state.players.forEach(p => {
+        if (p.id !== myId && !isBot(p.id)) sendTo(p.id, { type: "start", role: host.roles[p.id], state: s });
+      });
+
+      enterGame();
+      runBots();
+    }
+
+    function enterGame() {
+      $("#gameRoomLabel").textContent = "الغرفة " + state.code;
+      $("#headerStatus").textContent = "الجولة جارية";
+      state.submitted = false;
+      state.selectedId = null;
+      state.pendingInvestigation = null;
+      renderGame();
+      showScreen("game");
+      showRoleCard();
+    }
+
+    // ---------- اللاعبون التجريبيون ----------
+    function runBots() {
+      if (!isHost || state.gameEnded) return;
+      setTimeout(() => {
+        if (state.gameEnded) return;
+        state.players
+          .filter(p => isBot(p.id) && state.alive.includes(p.id))
+          .forEach(bot => {
+            const targets = state.alive.filter(id => id !== bot.id);
+            if (!targets.length) return;
+            const t = targets[Math.floor(Math.random() * targets.length)];
+            if (state.phase === "night") {
+              if (ACTIVE_ROLES.includes(host.roles[bot.id])) submitAction(bot.id, t);
+            } else {
+              submitVote(bot.id, t);
+            }
+          });
+      }, 900);
+    }
+
+    // ---------- منطق الليل ----------
+    function submitAction(playerId, targetId) {
+      if (state.phase !== "night" || state.gameEnded) return;
+      if (!state.alive.includes(playerId) || !state.alive.includes(targetId)) return;
+      if (!ACTIVE_ROLES.includes(host.roles[playerId])) return;
+      host.actions[playerId] = targetId;
+      tryResolveNight();
+    }
+
+    function tryResolveNight() {
+      if (state.phase !== "night" || state.gameEnded) return;
+      const actors = state.alive.filter(id => ACTIVE_ROLES.includes(host.roles[id]));
+      if (!actors.every(id => host.actions[id])) return;
+
+      const mafiaTargets = actors.filter(id => host.roles[id] === "mafia").map(id => host.actions[id]);
+      const counts = {};
+      mafiaTargets.forEach(t => counts[t] = (counts[t] || 0) + 1);
+      let target = null, best = 0;
+      mafiaTargets.forEach(t => { if (counts[t] > best) { best = counts[t]; target = t; } });
+
+      const saved = actors.filter(id => host.roles[id] === "doctor").map(id => host.actions[id]);
+
+      actors.filter(id => host.roles[id] === "investigator").forEach(id => {
+        const t = host.actions[id];
+        const msg = { type: "investigation", name: nameOf(t), mafia: host.roles[t] === "mafia" };
+        if (id === myId) state.pendingInvestigation = msg; else sendTo(id, msg);
+      });
+
+      let desc;
+      if (target && !saved.includes(target)) {
+        state.alive = state.alive.filter(id => id !== target);
+        desc = "عُثر على " + nameOf(target) + " مقتولًا هذا الصباح.";
+      } else if (target) {
+        desc = "حاولت المافيا الهجوم ليلًا، لكن الطبيب أنقذ الضحية.";
+      } else {
+        desc = "مرّت الليلة بهدوء.";
+      }
+
+      host.actions = {};
+      host.votes = {};
+      state.phase = "day";
+      state.pendingResult = desc + " بدأت مرحلة النقاش والتصويت.";
+
+      if (checkEnd()) return;
+      pushUpdate({ icon: "☀", title: "أشرقت الشمس", description: desc + " حان وقت النقاش والتصويت." });
+      runBots();
+    }
+
+    // ---------- منطق النهار ----------
+    function submitVote(playerId, targetId) {
+      if (state.phase !== "day" || state.gameEnded) return;
+      if (!state.alive.includes(playerId) || !state.alive.includes(targetId)) return;
+      host.votes[playerId] = targetId;
+      tryResolveDay();
+    }
+
+    function tryResolveDay() {
+      if (state.phase !== "day" || state.gameEnded) return;
+      if (!state.alive.every(id => host.votes[id])) return;
+
+      const counts = {};
+      state.alive.forEach(id => { const t = host.votes[id]; counts[t] = (counts[t] || 0) + 1; });
+      let out = null, best = 0, tie = false;
+      Object.entries(counts).forEach(([t, c]) => {
+        if (c > best) { best = c; out = t; tie = false; }
+        else if (c === best) tie = true;
+      });
+      if (tie) out = null;
+
+      host.votes = {};
+      host.actions = {};
+      let desc;
+      if (out) {
+        state.alive = state.alive.filter(id => id !== out);
+        desc = "صوّتت المدينة على " + nameOf(out) + " وخرج من الجولة.";
+      } else {
+        desc = "تعادلت الأصوات ولم يخرج أحد.";
+      }
+      state.pendingResult = desc;
+
+      if (checkEnd()) return;
+      state.phase = "night";
+      state.round++;
+      pushUpdate({ icon: "☾", title: "انتهى التصويت", description: desc + " تبدأ الليلة التالية." });
+      runBots();
+    }
+
+    function checkEnd() {
+      const mafia = state.alive.filter(id => host.roles[id] === "mafia").length;
+      const others = state.alive.length - mafia;
+      if (mafia === 0) {
+        state.gameEnded = true;
+        pushUpdate({ icon: "☀", title: "فاز المواطنون", description: "تم إقصاء جميع أفراد المافيا." });
+        return true;
+      }
+      if (mafia >= others) {
+        state.gameEnded = true;
+        pushUpdate({ icon: "♠", title: "فازت المافيا", description: "أصبح عدد المافيا مساويًا أو أكبر من بقية الأحياء." });
+        return true;
+      }
+      return false;
+    }
+
+    // ---------- عرض اللعبة ----------
+    function renderGame() {
+      const container = $("#gamePlayers");
+      container.replaceChildren();
+
+      const me = state.players.find(player => player.id === myId);
+      const spectator = !me || !state.alive.includes(me.id);
+      const canAct = !spectator && !state.gameEnded &&
+        (state.phase === "day" || ACTIVE_ROLES.includes(state.role));
+
+      state.players.forEach(player => {
+        const alive = state.alive.includes(player.id);
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "game-player";
+        if (!alive) button.classList.add("dead");
+        if (player.id === myId) button.classList.add("self");
+        if (player.id === state.selectedId) button.classList.add("selected");
+        button.disabled = !alive || player.id === myId || !canAct || state.submitted;
+        button.innerHTML = `<span class="player-avatar">${player.icon}</span><span class="player-name"></span><small>${alive ? "على قيد الحياة" : "متفرّج"}</small>`;
+        button.querySelector(".player-name").textContent = player.name;
+        button.addEventListener("click", () => {
+          state.selectedId = player.id;
+          renderGame();
+          $("#selectionHint").textContent = "تم اختيار " + player.name + ". أكّد اختيارك للمتابعة.";
+        });
+        container.appendChild(button);
+      });
+
+      const alivePlayers = state.players.filter(player => state.alive.includes(player.id));
+      $("#aliveCounter").textContent = alivePlayers.length + " أحياء";
+      $("#phaseTitle").textContent = state.gameEnded ? "انتهت الجولة" : spectator ? "أنت تتابع الجولة" : state.phase === "night" ? "الليل يخيّم على المدينة" : "أشرقت الشمس";
+      $("#phaseDescription").textContent = state.gameEnded
+        ? "انتهت اللعبة. كُشفت جميع الأدوار."
+        : spectator
+          ? "أنت متفرّج. يمكنك مشاهدة الجولة حتى نهايتها."
+          : state.phase === "night" ? nightInstruction() : "ناقشوا ما حدث، ثم اختاروا لاعبًا للتصويت عليه.";
+      $("#roundLabel").textContent = state.phase === "night" ? "الليلة " + ordinal(state.round) : "نهار الجولة " + state.round;
+      $("#actionTitle").textContent = state.gameEnded ? "النهاية" : spectator ? "مشاهدة الجولة" : state.phase === "night" ? actionTitle() : "التصويت";
+      $("#actionDescription").textContent = state.gameEnded
+        ? "يمكن لصاحب الغرفة إعادة الجميع إلى اللوبي."
+        : spectator ? "لا يمكنك اختيار لاعب أو التصويت." : state.submitted ? "تم إرسال اختيارك. بانتظار بقية اللاعبين..." : nightInstruction();
+      $("#actionButton").textContent = state.submitted ? "بانتظار الآخرين..." : state.phase === "night" ? "تأكيد الاختيار" : "تأكيد التصويت";
+      $("#actionButton").disabled = state.submitted;
+      $("#actionButton").classList.toggle("hidden", !canAct);
+      $("#advanceButton").classList.toggle("hidden", !state.gameEnded);
+      $("#advanceButton").textContent = "العودة إلى اللوبي";
+      $("#selectionHint").textContent = state.gameEnded
+        ? "انتهت الجولة."
+        : spectator ? "أنت في وضع المشاهدة." : state.submitted ? "تم إرسال اختيارك، بانتظار بقية اللاعبين." : canAct ? "اختر لاعبًا من البطاقات لتنفيذ الإجراء." : "انتظر حتى ينتهي أصحاب الأدوار من إجراءاتهم.";
+      $("#gameLog").textContent = state.pendingResult;
+
+      if (state.gameEnded && state.revealed) {
+        $("#roleEmblem").textContent = "👁";
+        $("#roleName").textContent = "الأدوار المكشوفة";
+        $("#roleDescription").textContent = state.players.map(p => p.name + ": " + (roles[state.revealed[p.id]] || roles.citizen).name).join(" · ");
+        $("#revealRoleButton").classList.add("hidden");
+      } else {
+        $("#roleEmblem").textContent = spectator ? "👁" : "•";
+        $("#roleName").textContent = spectator ? "متفرّج" : "الدور مخفي";
+        $("#roleDescription").textContent = spectator ? "خرجت من الجولة. تابع حتى النهاية." : "اكشف بطاقتك السرية لتعرف دورك.";
+        $("#revealRoleButton").classList.remove("hidden");
+      }
+    }
+
+    function nightInstruction() {
+      if (state.phase === "day") return "اختر لاعبًا من القائمة ثم أكّد تصويتك.";
+      if (state.role === "mafia") return "اختر لاعبًا تستهدفه المافيا هذه الليلة.";
+      if (state.role === "doctor") return "اختر لاعبًا تحاول حمايته هذه الليلة.";
+      if (state.role === "investigator") return "اختر لاعبًا للتحري عنه هذه الليلة.";
+      return "انتظر أدوار الليل حتى تنتهي.";
+    }
+
+    function actionTitle() {
+      if (state.role === "mafia") return "اختيار هدف";
+      if (state.role === "doctor") return "حماية لاعب";
+      if (state.role === "investigator") return "التحري عن لاعب";
+      return "انتظار الصباح";
+    }
+
+    function showRoleCard() {
+      const role = roles[state.role] || roles.citizen;
+      $("#modalRoleEmblem").textContent = role.icon;
+      $("#modalRoleName").textContent = role.name;
+      $("#modalRoleDescription").textContent = role.description;
+      $("#roleModal").classList.remove("hidden");
+    }
+
+    function hideRoleCard() {
+      $("#roleModal").classList.add("hidden");
+    }
+
+    function ordinal(number) {
+      return ["الأولى", "الثانية", "الثالثة", "الرابعة", "الخامسة", "السادسة"][number - 1] || number;
+    }
+
+    function showResult(icon, title, description) {
+      $("#resultEmblem").textContent = icon;
+      $("#resultTitle").textContent = title;
+      $("#resultDescription").textContent = description;
+      $("#resultModal").classList.remove("hidden");
+    }
+
+    function confirmAction() {
+      if (state.submitted || state.gameEnded) return;
+      if (!state.selectedId) {
+        $("#selectionHint").textContent = "اختَر لاعبًا أولًا.";
+        return;
+      }
+
+      const targetId = state.selectedId;
+      const type = state.phase === "night" ? "action" : "vote";
+      state.submitted = true;
+      renderGame();
+
+      if (isHost) {
+        if (type === "action") submitAction(myId, targetId); else submitVote(myId, targetId);
+      } else if (hostConn && hostConn.open) {
+        hostConn.send({ type, targetId });
+      }
+    }
+
+    function continueAfterResult() {
+      $("#resultModal").classList.add("hidden");
+      if (state.pendingInvestigation) {
+        const inv = state.pendingInvestigation;
+        state.pendingInvestigation = null;
+        showResult("⌕", "نتيجة التحري", inv.mafia ? inv.name + " من المافيا!" : inv.name + " ليس من المافيا.");
+        return;
+      }
+      renderGame();
+    }
+
+    function continueGame() {
+      if (!state.gameEnded) return;
+      if (isHost) {
+        state.started = false;
+        state.gameEnded = false;
+        state.players = state.players.filter(p => !isBot(p.id));
+        broadcast(lobbyPayload());
+      }
+      openLobby();
+    }
+
+    function leaveRoom() {
+      state.code = "";
+      state.players = [];
+      state.started = false;
+      state.gameEnded = false;
+      Object.keys(conns).forEach(k => delete conns[k]);
+      hostConn = null;
+      if (peer) { try { peer.destroy(); } catch (e) {} }
+      peer = null; isHost = false; myId = null;
+      $("#headerStatus").textContent = "لعبة اجتماعية";
+      $("#roleModal").classList.add("hidden");
+      $("#resultModal").classList.add("hidden");
+      showScreen("home");
+    }
+
+    async function copyCode() {
+      try {
+        await navigator.clipboard.writeText(state.code);
+        $("#copyCodeButton").textContent = "تم النسخ";
+      } catch {
+        $("#copyCodeButton").textContent = state.code;
+      }
+      setTimeout(() => $("#copyCodeButton").textContent = "نسخ", 1500);
+    }
+
+    function goHome() {
+      if (!screens.home.classList.contains("hidden")) return;
+      if (peer) {
+        if (!confirm("ستغادر الغرفة الحالية. هل تريد المتابعة؟")) return;
+        leaveRoom();
+        return;
+      }
+      showScreen("home");
+    }
+
+    $("#enterButton").addEventListener("click", () => showScreen("home"));
+    $("#createRoomButton").addEventListener("click", createRoom);
+    $("#joinRoomButton").addEventListener("click", joinRoom);
+    $("#startGameButton").addEventListener("click", startGame);
+    $("#leaveRoomButton").addEventListener("click", leaveRoom);
+    $("#copyCodeButton").addEventListener("click", copyCode);
+    $("#actionButton").addEventListener("click", confirmAction);
+    $("#advanceButton").addEventListener("click", continueGame);
+    $("#revealRoleButton").addEventListener("click", showRoleCard);
+    $("#closeRoleModal").addEventListener("click", hideRoleCard);
+    $("#hideRoleButton").addEventListener("click", hideRoleCard);
+    $("#resultContinueButton").addEventListener("click", continueAfterResult);
+
+    $("#roomCode").addEventListener("input", event => {
+      event.target.value = event.target.value.toUpperCase();
+    });
+
+    $("#roleModal").addEventListener("click", event => {
+      if (event.target.id === "roleModal") hideRoleCard();
+    });
+
+    $("#resultModal").addEventListener("click", event => {
+      if (event.target.id === "resultModal") continueAfterResult();
+    });
+
+    window.addEventListener("beforeunload", () => { if (peer) peer.destroy(); });
+  </script>
+</body>
+</html>
